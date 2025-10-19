@@ -1,0 +1,119 @@
+package practice;
+import java.util.*;
+
+public class TicTacToe {
+    static char[][] board = new char[5][5];
+    static String player1, player2;
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter Player 1 name: ");
+        player1 = sc.nextLine();
+        System.out.print("Enter Player 2 name: ");
+        player2 = sc.nextLine();
+        System.out.println("Game started between " + player1 + " and " + player2);
+
+        boolean playAgain;
+        do {
+            initializeBoard();
+            char currentSymbol = 'X';
+            String currentPlayer = player1;
+            boolean gameEnded = false;
+
+            while (!gameEnded) {
+                displayBoard();
+                System.out.println(currentPlayer + "'s turn to play");
+                int row, col;
+                while (true) {
+                    row = sc.nextInt();
+                    col = sc.nextInt();
+                    if (isValidMove(row, col)) break;
+                    System.out.println("Invalid move. Try again:");
+                }
+                board[row][col] = currentSymbol;
+
+                if (checkWin(currentSymbol)) {
+                    displayBoard();
+                    System.out.println(currentPlayer + " wins!");
+                    gameEnded = true;
+                } else if (isDraw()) {
+                    displayBoard();
+                    System.out.println("It's a draw!");
+                    gameEnded = true;
+                } else {
+                    if (currentSymbol == 'X') {
+                        currentSymbol = 'O';
+                        currentPlayer = player2;
+                    } else {
+                        currentSymbol = 'X';
+                        currentPlayer = player1;
+                    }
+                }
+            }
+
+            System.out.print("Do you want to play again? (yes/no): ");
+            playAgain = sc.next().equalsIgnoreCase("yes");
+            sc.nextLine(); // clear buffer
+        } while (playAgain);
+        sc.close();
+    }
+
+    static void initializeBoard() {
+        for (int i = 0; i < 5; i++)
+            for (int j = 0; j < 5; j++)
+                board[i][j] = ' ';
+    }
+
+    static void displayBoard() {
+        System.out.println("\nCurrent Board:");
+        System.out.print("  ");
+        for (int i = 0; i < 5; i++) System.out.print(i + " ");
+        System.out.println();
+        for (int i = 0; i < 5; i++) {
+            System.out.print(i + " ");
+            for (int j = 0; j < 5; j++) {
+                System.out.print(board[i][j]);
+                if (j < 4) System.out.print("|");
+            }
+            System.out.println();
+            if (i < 4) {
+                System.out.print("  ");
+                for (int j = 0; j < 5; j++) {
+                    System.out.print("-");
+                    if (j < 4) System.out.print("+");
+                }
+                System.out.println();
+            }
+        }
+    }
+
+    static boolean isValidMove(int row, int col) {
+        return row >= 0 && row < 5 && col >= 0 && col < 5 && board[row][col] == ' ';
+    }
+
+    static boolean checkWin(char symbol) {
+        // Check rows and columns
+        for (int i = 0; i < 5; i++) {
+            boolean rowWin = true, colWin = true;
+            for (int j = 0; j < 5; j++) {
+                if (board[i][j] != symbol) rowWin = false;
+                if (board[j][i] != symbol) colWin = false;
+            }
+            if (rowWin || colWin) return true;
+        }
+        // Check diagonals
+        boolean diag1 = true, diag2 = true;
+        for (int i = 0; i < 5; i++) {
+            if (board[i][i] != symbol) diag1 = false;
+            if (board[i][4 - i] != symbol) diag2 = false;
+        }
+        return diag1 || diag2;
+    }
+
+    static boolean isDraw() {
+        for (int i = 0; i < 5; i++)
+            for (int j = 0; j < 5; j++)
+                if (board[i][j] == ' ') return false;
+        return true;
+    }
+}
